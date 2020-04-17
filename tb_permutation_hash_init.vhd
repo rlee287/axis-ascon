@@ -23,14 +23,8 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.NUMERIC_STD.ALL;
 
--- Uncomment the following library declaration if using
--- arithmetic functions with Signed or Unsigned values
---use IEEE.NUMERIC_STD.ALL;
-
--- Uncomment the following library declaration if instantiating
--- any Xilinx leaf cells in this code.
---library UNISIM;
---use UNISIM.VComponents.all;
+library work;
+use work.ascon_types.ALL;
 
 entity tb_permutation_hash_init is
 --  Port ( );
@@ -46,6 +40,7 @@ architecture Behavioral of tb_permutation_hash_init is
     signal clk: STD_LOGIC;
     signal state_in: STD_LOGIC_VECTOR (319 downto 0) := (others => '0');
     signal state_out: STD_LOGIC_VECTOR (319 downto 0);
+    signal state_out_obj: ASCON_STATE;
     signal switch_ctr: UNSIGNED (3 downto 0) := (others => '0');
 begin
     permutation_a: ascon_permutation
@@ -54,6 +49,7 @@ begin
         state_in => state_in,
         state_out => state_out
     );
+    state_out_obj <= vec_to_state(state_out);
     
     clk_gen: process is
     begin
@@ -71,9 +67,9 @@ begin
     
     make_iv: process is
     begin
-        state_in (319 downto 256) <= x"00400c0000000100";
+        state_in (63 downto 0) <= x"00400c0000000100";
         wait until switch_ctr = 15;
-        state_in (319 downto 256) <= x"00400c0000000000";
+        state_in (63 downto 0) <= x"00400c0000000000";
         wait until switch_ctr = 15;
     end process;
 

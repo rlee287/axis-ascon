@@ -23,14 +23,8 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.NUMERIC_STD.ALL;
 
--- Uncomment the following library declaration if using
--- arithmetic functions with Signed or Unsigned values
---use IEEE.NUMERIC_STD.ALL;
-
--- Uncomment the following library declaration if instantiating
--- any Xilinx leaf cells in this code.
---library UNISIM;
---use UNISIM.VComponents.all;
+library work;
+use work.ascon_types.ALL;
 
 entity ascon_permutation is
     Generic ( round_count : integer := 12);
@@ -42,30 +36,30 @@ end ascon_permutation;
 architecture Behavioral of ascon_permutation is
     component ascon_xor
     port (
-        state_in : in STD_LOGIC_VECTOR (319 downto 0);
-        state_out : out STD_LOGIC_VECTOR (319 downto 0);
+        state_in : in ASCON_STATE;
+        state_out : out ASCON_STATE;
         round_number : in STD_LOGIC_VECTOR (3 downto 0)
     );
     end component;
     component ascon_sbox
     port (
-        state_in : in STD_LOGIC_VECTOR (319 downto 0);
-        state_out : out STD_LOGIC_VECTOR (319 downto 0)
+        state_in : in ASCON_STATE;
+        state_out : out ASCON_STATE
     );
     end component;
     component ascon_linear
     port (
-        state_in : in STD_LOGIC_VECTOR (319 downto 0);
-        state_out : out STD_LOGIC_VECTOR (319 downto 0)
+        state_in : in ASCON_STATE;
+        state_out : out ASCON_STATE
     );
     end component;
-    type ascon_state is array (0 to round_count-1+1) of STD_LOGIC_VECTOR(319 downto 0);
-    signal round_results: ascon_state;
-    signal const_add: ascon_state;
-    signal subst_vec: ascon_state;
-    signal diffusion: ascon_state;
+    type ascon_state_pipe is array (0 to round_count-1+1) of ASCON_STATE;
+    signal round_results: ascon_state_pipe;
+    signal const_add: ascon_state_pipe;
+    signal subst_vec: ascon_state_pipe;
+    signal diffusion: ascon_state_pipe;
 begin
-    round_results(0) <= state_in;
+    round_results(0) <= vec_to_state(state_in);
     generate_rounds: for i in 0 to round_count-1 generate
         const_add_module: ascon_xor
         port map (
@@ -92,5 +86,5 @@ begin
             end if;
         end process;
     end generate;
-    state_out <= round_results(round_count-1+1);
+    state_out <= state_to_vec(round_results(round_count-1+1));
 end Behavioral;

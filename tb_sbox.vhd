@@ -29,41 +29,41 @@ end tb_sbox;
 
 architecture Behavioral of tb_sbox is
     -- Copied from sbox module
-    pure function reverse_vector(vec_in: STD_LOGIC_VECTOR) return STD_LOGIC_VECTOR is
-        variable reversed: STD_LOGIC_VECTOR(vec_in'high downto vec_in'low);
-    begin
-        for i in vec_in'low to vec_in'high loop
-            reversed(i) := vec_in(vec_in'high-i+vec_in'low);
-        end loop;
-        return reversed;
-    end function;
     pure function sbox(sbox_input: STD_LOGIC_VECTOR) return STD_LOGIC_VECTOR is
-        variable sbox_temp: STD_LOGIC_VECTOR(4 downto 0);
-        variable sbox_output: STD_LOGIC_VECTOR(4 downto 0); 
+        variable sbox_temp: STD_LOGIC_VECTOR(0 to 4);
+        variable sbox_temp2: STD_LOGIC_VECTOR(0 to 4);
+        variable sbox_output: STD_LOGIC_VECTOR(0 to 4); 
     begin
-        assert sbox_input'left=4 and sbox_output'right=0 report "sbox input must be 5 bits" severity failure;
+        assert sbox_input'left=0 and sbox_input'right=4 report "sbox input must be (0 to 4)" severity failure;
         --sbox_temp := reverse_vector(sbox_input);
+        --report "Input is 0x" & to_hstring(sbox_input);
+        sbox_temp := sbox_input;
         
-        sbox_temp(0) := sbox_temp(0) xor sbox_temp(4);
-        sbox_temp(2) := sbox_temp(2) xor sbox_temp(1);
-        sbox_temp(4) := sbox_temp(4) xor sbox_temp(3);
-        
-        sbox_output(0) := sbox_temp(0) or (not sbox_temp(1) and sbox_temp(2));
-        sbox_output(1) := sbox_temp(1) xor (not sbox_temp(2) and sbox_temp(3));
-        sbox_output(2) := sbox_temp(2) xor (not sbox_temp(3) and sbox_temp(4));
-        sbox_output(3) := sbox_temp(3) xor (not sbox_temp(4) and sbox_temp(0));
-        sbox_output(4) := sbox_temp(4) xor (not sbox_temp(0) and sbox_temp(1));
-        
-        sbox_output(1) := sbox_output(1) xor sbox_output(0);
-        sbox_output(3) := sbox_output(3) xor sbox_output(2);
-        sbox_output(0) := sbox_output(0) xor sbox_output(4);
+        sbox_temp(0) := sbox_input(0) xor sbox_input(4);
+        sbox_temp(2) := sbox_input(2) xor sbox_input(1);
+        sbox_temp(4) := sbox_input(4) xor sbox_input(3);
+
+        --report "Temp is 0x" & to_hstring(sbox_temp);
+
+        sbox_temp2(0) := sbox_temp(0) xor (not sbox_temp(1) and sbox_temp(2));
+        sbox_temp2(1) := sbox_temp(1) xor (not sbox_temp(2) and sbox_temp(3));
+        sbox_temp2(2) := sbox_temp(2) xor (not sbox_temp(3) and sbox_temp(4));
+        sbox_temp2(3) := sbox_temp(3) xor (not sbox_temp(4) and sbox_temp(0));
+        sbox_temp2(4) := sbox_temp(4) xor (not sbox_temp(0) and sbox_temp(1));
+        --report "Temp2 is 0x" & to_hstring(sbox_temp2);
+        sbox_output := sbox_temp2;
+
+        sbox_output(1) := sbox_temp2(1) xor sbox_temp2(0);
+        sbox_output(3) := sbox_temp2(3) xor sbox_temp2(2);
+        sbox_output(0) := sbox_temp2(0) xor sbox_temp2(4);
+
         sbox_output(2) := not sbox_output(2);
-        
+        --report "Output is 0x" & to_hstring(sbox_output);
         --return reverse_vector(sbox_output);
         return sbox_output;
     end function;
-    signal counter: UNSIGNED(4 downto 0) := (others => '0');
-    signal substitution_out: STD_LOGIC_VECTOR(4 downto 0);
+    signal counter: UNSIGNED(0 to 4) := (others => '0');
+    signal substitution_out: STD_LOGIC_VECTOR(0 to 4);
 begin
     ctr_increment: process is
     begin
@@ -72,6 +72,6 @@ begin
     end process;
     sbox_evaluate: process(counter) is
     begin
-        substitution_out <= sbox(reverse_vector(std_logic_vector(counter)));
+        substitution_out <= sbox(std_logic_vector(counter));
     end process;
 end Behavioral;
