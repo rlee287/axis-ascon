@@ -4,11 +4,13 @@
 -- 
 -- Create Date: 04/13/2020 07:35:36 PM
 -- Design Name: 
--- Module Name: ascon_permutation - Behavioral
+-- Module Name: ascon_permutation_pipelined - Behavioral
 -- Project Name: 
 -- Target Devices: 
 -- Tool Versions: 
--- Description: 
+-- Description:
+-- A fully unrolled, pipelined implementation of the ascon permutation
+-- Number of rounds is fixed at compile time
 -- 
 -- Dependencies: 
 -- 
@@ -26,14 +28,14 @@ use IEEE.NUMERIC_STD.ALL;
 library work;
 use work.ascon_types.ALL;
 
-entity ascon_permutation is
+entity ascon_permutation_pipelined is
     Generic ( round_count : integer := 12);
     Port ( clk : in STD_LOGIC;
            state_in : in STD_LOGIC_VECTOR (319 downto 0);
            state_out : out STD_LOGIC_VECTOR (319 downto 0));
-end ascon_permutation;
+end ascon_permutation_pipelined;
 
-architecture Behavioral of ascon_permutation is
+architecture Behavioral of ascon_permutation_pipelined is
     component ascon_xor
     port (
         state_in : in ASCON_STATE;
