@@ -38,12 +38,10 @@ begin
         variable output_temp: ASCON_STATE;
     begin
         xor_value := (others => '0');
-        if unsigned(round_number)<12 then
-            xor_value(3 downto 0) := round_number;
-            xor_value(7 downto 4) := std_logic_vector(15-unsigned(round_number));
-            output_temp := state_in;
-            output_temp(2) := state_in(2) xor xor_value;
-            state_out <= output_temp;
-        end if;
+        output_temp := state_in;
+        xor_value(3 downto 0) := round_number;
+        xor_value(7 downto 4) := std_logic_vector(15-unsigned(round_number));
+        output_temp(2) := state_in(2) xor xor_value;
+        state_out <= output_temp;
     end process;
 end Behavioral;
