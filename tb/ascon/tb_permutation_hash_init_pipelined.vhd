@@ -4,7 +4,7 @@
 -- 
 -- Create Date: 04/14/2020 08:18:03 PM
 -- Design Name: 
--- Module Name: tb_permutation_hash_init - Behavioral
+-- Module Name: tb_permutation_hash_init_pipelined - Behavioral
 -- Project Name: 
 -- Target Devices: 
 -- Tool Versions: 
@@ -26,12 +26,12 @@ use IEEE.NUMERIC_STD.ALL;
 library work;
 use work.ascon_types.ALL;
 
-entity tb_permutation_hash_init is
+entity tb_permutation_hash_init_pipelined is
 --  Port ( );
-end tb_permutation_hash_init;
+end tb_permutation_hash_init_pipelined;
 
-architecture Behavioral of tb_permutation_hash_init is
-    component ascon_permutation
+architecture Behavioral of tb_permutation_hash_init_pipelined is
+    component ascon_permutation_pipelined
         Generic ( round_count : integer := 12);
         Port ( clk : in STD_LOGIC;
                state_in : in STD_LOGIC_VECTOR (319 downto 0);
@@ -43,7 +43,7 @@ architecture Behavioral of tb_permutation_hash_init is
     signal state_out_obj: ASCON_STATE;
     signal switch_ctr: UNSIGNED (3 downto 0) := (others => '0');
 begin
-    permutation_a: ascon_permutation
+    permutation_a: ascon_permutation_pipelined
     port map(
         clk => clk,
         state_in => state_in,
