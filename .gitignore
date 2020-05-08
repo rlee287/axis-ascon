@@ -1,0 +1,5 @@
+*.o
+work-obj*.cf
+*.vcd
+*.fst
+*.ghw
