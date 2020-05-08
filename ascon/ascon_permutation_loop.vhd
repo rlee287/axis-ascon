@@ -112,7 +112,7 @@ begin
                         current_round_count <= current_round_count + 1;
                         internal_state <= round_output;
                         state_out <= state_to_vec(round_output);
-                        if current_round_count = max_round_count then
+                        if current_round_count = (max_round_count-1) then
                             busy_internal <= '0';
                             computation_happened <= '1';
                         end if;
