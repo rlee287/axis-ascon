@@ -36,23 +36,11 @@ entity ascon_permutation_pipelined is
 end ascon_permutation_pipelined;
 
 architecture Behavioral of ascon_permutation_pipelined is
-    component ascon_xor
+    component ascon_round
     port (
         state_in : in ASCON_STATE;
         state_out : out ASCON_STATE;
         round_number : in STD_LOGIC_VECTOR (3 downto 0)
-    );
-    end component;
-    component ascon_sbox
-    port (
-        state_in : in ASCON_STATE;
-        state_out : out ASCON_STATE
-    );
-    end component;
-    component ascon_linear
-    port (
-        state_in : in ASCON_STATE;
-        state_out : out ASCON_STATE
     );
     end component;
     type ascon_state_pipe is array (0 to round_count-1+1) of ASCON_STATE;
@@ -63,21 +51,11 @@ architecture Behavioral of ascon_permutation_pipelined is
 begin
     round_results(0) <= vec_to_state(state_in);
     generate_rounds: for i in 0 to round_count-1 generate
-        const_add_module: ascon_xor
+        const_add_module: ascon_round
         port map (
             state_in => round_results(i),
-            state_out => const_add(i),
+            state_out => diffusion(i),
             round_number => std_logic_vector(to_unsigned(i+(12-round_count),4))
-        );
-        substitution_module: ascon_sbox
-        port map (
-            state_in => const_add(i),
-            state_out => subst_vec(i)
-        );
-        diffusion_module: ascon_linear
-        port map (
-            state_in => subst_vec(i),
-            state_out => diffusion(i)
         );
     end generate;
     generate_pipeline_regs: for i in 0 to round_count-1 generate

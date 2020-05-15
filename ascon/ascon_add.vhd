@@ -25,13 +25,13 @@ use IEEE.NUMERIC_STD.ALL;
 library work;
 use work.ascon_types.ALL;
 
-entity ascon_xor is
+entity ascon_add is
     Port ( state_in : in ASCON_STATE;
            state_out : out ASCON_STATE;
            round_number : in STD_LOGIC_VECTOR (3 downto 0));
-end ascon_xor;
+end ascon_add;
 
-architecture Behavioral of ascon_xor is
+architecture Behavioral of ascon_add is
 begin
     process(state_in, round_number) is
         variable xor_value: STD_LOGIC_VECTOR(63 downto 0);

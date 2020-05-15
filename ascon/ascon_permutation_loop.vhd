@@ -42,54 +42,30 @@ entity ascon_permutation_loop is
 end ascon_permutation_loop;
 
 architecture Behavioral of ascon_permutation_loop is
-    component ascon_xor
+    component ascon_round
     port (
         state_in : in ASCON_STATE;
         state_out : out ASCON_STATE;
         round_number : in STD_LOGIC_VECTOR (3 downto 0)
     );
     end component;
-    component ascon_sbox
-    port (
-        state_in : in ASCON_STATE;
-        state_out : out ASCON_STATE
-    );
-    end component;
-    component ascon_linear
-    port (
-        state_in : in ASCON_STATE;
-        state_out : out ASCON_STATE
-    );
-    end component;
-    signal internal_state: ASCON_STATE;
-    signal round_output: ASCON_STATE;
-    signal const_add: ASCON_STATE;
-    signal subst_vec: ASCON_STATE;
-
     signal current_round_count: UNSIGNED(3 downto 0) := (others => '0');
     constant max_round_count: UNSIGNED(3 downto 0) := to_unsigned(12, 4);
 
     signal busy_internal: STD_LOGIC := '0';
 
     signal computation_happened: STD_LOGIC := '0';
+
+    signal internal_state: ASCON_STATE;
+    signal round_output: ASCON_STATE;
 begin
     instantiate_combinational_modules: block is
     begin
-        const_add_module: ascon_xor
+        ascon_round_module: ascon_round
         port map (
             state_in => internal_state,
-            state_out => const_add,
+            state_out => round_output,
             round_number => std_logic_vector(current_round_count)
-        );
-        substitution_module: ascon_sbox
-        port map (
-            state_in => const_add,
-            state_out => subst_vec
-        );
-        diffusion_module: ascon_linear
-        port map (
-            state_in => subst_vec,
-            state_out => round_output
         );
     end block instantiate_combinational_modules;
 
