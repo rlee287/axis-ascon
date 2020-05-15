@@ -90,7 +90,6 @@ begin
             wait until reset='0';
         end if;
         state_in (63 downto 0) <= x"00400c0000000100";
-        wait until rising_edge(clk);
         start <= '1';
         wait until rising_edge(clk);
         start <= '0';
